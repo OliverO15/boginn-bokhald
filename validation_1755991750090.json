@@ -1,0 +1,32 @@
+[
+  {
+    "registrationId": "cmeeiitpq000a8o7fxenefv35",
+    "programName": "Kids Training",
+    "fullReg": 3,
+    "halfReg": 0,
+    "subReg": 0,
+    "revenue": 150000,
+    "venueCosts": 75000,
+    "netProfit": 75000
+  },
+  {
+    "registrationId": "cmeousfml00018okj4ehg2unj",
+    "programName": "U16 Training",
+    "fullReg": 13,
+    "halfReg": 1,
+    "subReg": 0,
+    "revenue": 675000,
+    "venueCosts": 337500,
+    "netProfit": 337500
+  },
+  {
+    "registrationId": "cmeoush0500038okjatuuhtjv",
+    "programName": "Monthly Pass",
+    "fullReg": 0,
+    "halfReg": 0,
+    "subReg": 5,
+    "revenue": 307500,
+    "venueCosts": 153750,
+    "netProfit": 153750
+  }
+]

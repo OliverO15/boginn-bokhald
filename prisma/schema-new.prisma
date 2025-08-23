@@ -38,12 +38,11 @@ model Year {
   @@map("years")
 }
 
-// CHANGED: Now serves as templates only (keeping original structure for now)
+// CHANGED: Now serves as templates only
 model ProgramType {
   id          String @id @default(cuid())
   name        String @unique // "Adult Training", "Kids Training", etc.
-  isMonthly   Boolean @default(false) // true for monthly programs, false for seasonal
-  sessionHours Float @default(1.5) // hours per session (configurable)
+  description String? // Optional description for templates
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
@@ -61,17 +60,17 @@ model ProgramTemplate {
   description String?
   
   // Template configuration
-  programName       String  @map("program_name") // Default program name when using template
-  sessionDuration   Float   @map("session_duration") // Hours per session
-  isMonthly        Boolean @default(false) @map("is_monthly")
-  venueSplitPercent Float   @default(50.0) @map("venue_split_percent")
+  programName       String  // Default program name when using template
+  sessionDuration   Float   // Hours per session
+  isMonthly        Boolean @default(false)
+  venueSplitPercent Float   @default(50.0)
   
   // Optional reference to program type for categorization
-  programTypeId String? @map("program_type_id")
+  programTypeId String?
   programType   ProgramType? @relation(fields: [programTypeId], references: [id])
   
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   
   // Relations
   pricingTemplates PricingTemplate[]
@@ -82,13 +81,10 @@ model ProgramTemplate {
 // NEW: Template pricing options
 model PricingTemplate {
   id          String @id @default(cuid())
-  templateId  String @map("template_id")
+  templateId  String
   name        String // "Full Season", "Half Season", "Student Rate", etc.
   price       Int    // Default price in ISK
   order       Int    @default(0) // Display order
-  
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
   
   // Relations
   template ProgramTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
@@ -102,18 +98,13 @@ model Program {
   yearId          String
   programTypeId   String? // Optional - for categorization/templates
   
-  // LEGACY FIELDS (keeping during transition)
-  fullPrice       Int    // Legacy - will be removed after migration
-  halfPrice       Int?   // Legacy - will be removed after migration
-  subscriptionPrice Int? // Legacy - will be removed after migration
-  venueSplitPercent Float @default(50.0) // Legacy venue split
-  
   // NEW FLEXIBLE FIELDS
-  name            String?  // Custom program name (e.g., "U16 Advanced Spring")
-  sessionDuration Float?   @map("session_duration") // Hours per session (per program)
-  isMonthly       Boolean? @default(false) @map("is_monthly") // Per program setting
-  venueSplitPercentNew Float? @default(50.0) @map("venue_split_percent_new") // New venue split
+  name            String  // Custom program name (e.g., "U16 Advanced Spring")
+  sessionDuration Float   // Hours per session (per program)
+  isMonthly       Boolean @default(false) // Per program setting
+  venueSplitPercent Float @default(50.0) // Per program setting
   
+  // REMOVED: fullPrice, halfPrice, subscriptionPrice (now dynamic)
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -134,14 +125,14 @@ model Program {
 // NEW: Dynamic pricing options per program
 model PricingOption {
   id        String @id @default(cuid())
-  programId String @map("program_id")
+  programId String
   name      String // "Full Season", "Student Rate", "Early Bird", etc.
   price     Int    // Price in ISK
   order     Int    @default(0) // Display order
-  isActive  Boolean @default(true) @map("is_active") // Can disable options without deleting
+  isActive  Boolean @default(true) // Can disable options without deleting
   
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   
   // Relations
   program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
@@ -188,17 +179,15 @@ model ProgramInstructor {
   @@map("program_instructors")
 }
 
-// CHANGED: Simplified registration model (keeping legacy during transition)
+// CHANGED: Simplified registration model
 model Registration {
   id        String @id @default(cuid())
   programId String
   seasonId  String?
   month     Int?    // for monthly programs (1-12)
   
-  // LEGACY FIELDS (keeping during transition)
-  fullRegistrations Int @default(0)
-  halfRegistrations Int @default(0)
-  subscriptionRegistrations Int @default(0)
+  // REMOVED: fullRegistrations, halfRegistrations, subscriptionRegistrations
+  // Now handled by RegistrationEntry
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -219,12 +208,12 @@ model Registration {
 // NEW: Dynamic registration entries
 model RegistrationEntry {
   id              String @id @default(cuid())
-  registrationId  String @map("registration_id")
-  pricingOptionId String @map("pricing_option_id")
+  registrationId  String
+  pricingOptionId String
   quantity        Int    @default(0) // Number of registrations for this pricing option
   
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   
   // Relations
   registration   Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)

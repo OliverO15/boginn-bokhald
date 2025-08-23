@@ -14,7 +14,11 @@ export default async function YearProgramsPage({ params }: PageProps) {
     include: {
       programs: {
         include: {
-          programType: true
+          programType: true,
+          pricingOptions: {
+            where: { isActive: true },
+            orderBy: { order: 'asc' }
+          }
         }
       }
     }
@@ -39,12 +43,18 @@ export default async function YearProgramsPage({ params }: PageProps) {
           <p className="text-gray-600 mt-2">Configure pricing and settings for each program type</p>
         </div>
         <div className="flex gap-4">
+          <Link
+            href={`/years/${yearId}/programs/flexible`}
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Create Flexible Program
+          </Link>
           {availableProgramTypes.length > 0 && (
             <Link
               href={`/years/${yearId}/programs/new`}
               className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
             >
-              Add Program
+              Add Standard Program
             </Link>
           )}
           <Link
@@ -61,10 +71,19 @@ export default async function YearProgramsPage({ params }: PageProps) {
           {year.programs.map((program) => (
             <div key={program.id} className="bg-white rounded-lg shadow-md border border-gray-200 p-6">
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-semibold text-gray-900">{program.programType.name}</h3>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    {program.name || program.programType?.name || 'Custom Program'}
+                  </h3>
+                  {program.pricingOptions.length > 0 && (
+                    <span className="inline-block mt-1 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                      Flexible Pricing
+                    </span>
+                  )}
+                </div>
                 <div className="flex gap-2">
                   <Link
-                    href={`/years/${yearId}/programs/${program.id}/edit`}
+                    href={`/years/${yearId}/programs/${program.id}/edit-flexible`}
                     className="text-blue-600 hover:text-blue-800 text-sm"
                   >
                     Edit
@@ -82,29 +101,54 @@ export default async function YearProgramsPage({ params }: PageProps) {
                 <div className="flex justify-between">
                   <span>Program Type:</span>
                   <span className="font-medium">
-                    {program.programType.isMonthly ? 'Monthly' : 'Seasonal'} 
-                    {!program.programType.isMonthly && ` (${program.programType.sessionHours}h per session)`}
+                    {program.programType ? (
+                      `${program.programType.isMonthly ? 'Monthly' : 'Seasonal'} 
+                      ${!program.programType.isMonthly ? ` (${program.programType.sessionHours}h per session)` : ''}`
+                    ) : (
+                      `${program.isMonthly ? 'Monthly' : 'Seasonal'} 
+                      ${!program.isMonthly && program.sessionDuration ? ` (${program.sessionDuration}h per session)` : ''}`
+                    )}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Full Price:</span>
-                  <span className="font-medium">{program.fullPrice.toLocaleString()} ISK</span>
-                </div>
-                {program.halfPrice && (
-                  <div className="flex justify-between">
-                    <span>Half Price:</span>
-                    <span className="font-medium">{program.halfPrice.toLocaleString()} ISK</span>
+
+                {/* Show flexible pricing options if available */}
+                {program.pricingOptions.length > 0 ? (
+                  <div className="space-y-2">
+                    <div className="font-medium text-gray-700">Pricing Options:</div>
+                    {program.pricingOptions.map((option: any) => (
+                      <div key={option.id} className="flex justify-between pl-4">
+                        <span>{option.name}:</span>
+                        <span className="font-medium">{option.price.toLocaleString()} ISK</span>
+                      </div>
+                    ))}
                   </div>
+                ) : (
+                  /* Fallback to legacy pricing */
+                  <>
+                    <div className="flex justify-between">
+                      <span>Full Price:</span>
+                      <span className="font-medium">{program.fullPrice.toLocaleString()} ISK</span>
+                    </div>
+                    {program.halfPrice && (
+                      <div className="flex justify-between">
+                        <span>Half Price:</span>
+                        <span className="font-medium">{program.halfPrice.toLocaleString()} ISK</span>
+                      </div>
+                    )}
+                    {program.subscriptionPrice && (
+                      <div className="flex justify-between">
+                        <span>With Subscription:</span>
+                        <span className="font-medium">{program.subscriptionPrice.toLocaleString()} ISK</span>
+                      </div>
+                    )}
+                  </>
                 )}
-                {program.subscriptionPrice && (
-                  <div className="flex justify-between">
-                    <span>With Subscription:</span>
-                    <span className="font-medium">{program.subscriptionPrice.toLocaleString()} ISK</span>
-                  </div>
-                )}
+
                 <div className="flex justify-between">
                   <span>Venue Split:</span>
-                  <span className="font-medium">{program.venueSplitPercent}%</span>
+                  <span className="font-medium">
+                    {program.venueSplitPercentNew || program.venueSplitPercent}%
+                  </span>
                 </div>
               </div>
 
@@ -122,16 +166,22 @@ export default async function YearProgramsPage({ params }: PageProps) {
       ) : (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg mb-4">No programs configured for {year.year} yet.</p>
-          {availableProgramTypes.length > 0 ? (
+          <div className="flex gap-4 justify-center">
             <Link
-              href={`/years/${yearId}/programs/new`}
-              className="inline-block bg-green-600 text-white px-6 py-3 rounded-md hover:bg-green-700 transition-colors"
+              href={`/years/${yearId}/programs/flexible`}
+              className="inline-block bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-colors"
             >
-              Add Your First Program
+              Create Flexible Program
             </Link>
-          ) : (
-            <p className="text-gray-400">All program types have been configured for this year.</p>
-          )}
+            {availableProgramTypes.length > 0 && (
+              <Link
+                href={`/years/${yearId}/programs/new`}
+                className="inline-block bg-green-600 text-white px-6 py-3 rounded-md hover:bg-green-700 transition-colors"
+              >
+                Add Standard Program
+              </Link>
+            )}
+          </div>
         </div>
       )}
 

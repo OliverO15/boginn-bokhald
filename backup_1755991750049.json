@@ -1,0 +1,443 @@
+{
+  "timestamp": "2025-08-23T23:29:10.047Z",
+  "years": 1,
+  "programs": 5,
+  "registrations": 3,
+  "programTypes": 6,
+  "instructors": 6,
+  "data": {
+    "years": [
+      {
+        "id": "cmeehchya00008o7fa773fubk",
+        "year": 2025,
+        "createdAt": "2025-08-16T16:37:05.890Z",
+        "updatedAt": "2025-08-16T16:37:05.890Z",
+        "programs": [
+          {
+            "id": "cmeehdht900028o7fduxvp5b1",
+            "yearId": "cmeehchya00008o7fa773fubk",
+            "programTypeId": "cmeeh75p700018oyhqyechfk8",
+            "fullPrice": 50000,
+            "halfPrice": 25000,
+            "subscriptionPrice": 61500,
+            "venueSplitPercent": 50,
+            "createdAt": "2025-08-16T16:37:52.363Z",
+            "updatedAt": "2025-08-16T16:37:52.363Z",
+            "programType": {
+              "id": "cmeeh75p700018oyhqyechfk8",
+              "name": "Kids Training",
+              "isMonthly": false,
+              "sessionHours": 1.5,
+              "createdAt": "2025-08-16T16:32:56.731Z",
+              "updatedAt": "2025-08-16T16:32:56.731Z"
+            },
+            "registrations": [
+              {
+                "id": "cmeeiitpq000a8o7fxenefv35",
+                "programId": "cmeehdht900028o7fduxvp5b1",
+                "seasonId": "cmeeiicmv00088o7f4v4pyps3",
+                "month": null,
+                "fullRegistrations": 3,
+                "halfRegistrations": 0,
+                "subscriptionRegistrations": 0,
+                "createdAt": "2025-08-16T17:10:00.686Z",
+                "updatedAt": "2025-08-16T17:11:11.092Z"
+              }
+            ]
+          },
+          {
+            "id": "cmeourfy600018ozul6ac3hpt",
+            "yearId": "cmeehchya00008o7fa773fubk",
+            "programTypeId": "cmeeh74rd00008oyhy0apgdd9",
+            "fullPrice": 75000,
+            "halfPrice": 37500,
+            "subscriptionPrice": null,
+            "venueSplitPercent": 50,
+            "createdAt": "2025-08-23T22:50:19.900Z",
+            "updatedAt": "2025-08-23T22:50:19.900Z",
+            "programType": {
+              "id": "cmeeh74rd00008oyhy0apgdd9",
+              "name": "Adult Training",
+              "isMonthly": true,
+              "sessionHours": 1.5,
+              "createdAt": "2025-08-16T16:32:55.513Z",
+              "updatedAt": "2025-08-23T22:55:12.869Z"
+            },
+            "registrations": []
+          },
+          {
+            "id": "cmeourhiq00038ozu3y3mlhbv",
+            "yearId": "cmeehchya00008o7fa773fubk",
+            "programTypeId": "cmeeh76ni00028oyh244j5zq2",
+            "fullPrice": 50000,
+            "halfPrice": 25000,
+            "subscriptionPrice": null,
+            "venueSplitPercent": 50,
+            "createdAt": "2025-08-23T22:50:21.939Z",
+            "updatedAt": "2025-08-23T22:50:21.939Z",
+            "programType": {
+              "id": "cmeeh76ni00028oyh244j5zq2",
+              "name": "U16 Training",
+              "isMonthly": false,
+              "sessionHours": 1.5,
+              "createdAt": "2025-08-16T16:32:57.966Z",
+              "updatedAt": "2025-08-16T16:32:57.966Z"
+            },
+            "registrations": [
+              {
+                "id": "cmeousfml00018okj4ehg2unj",
+                "programId": "cmeourhiq00038ozu3y3mlhbv",
+                "seasonId": "cmeeiibi000048o7fb0r6mpdd",
+                "month": null,
+                "fullRegistrations": 13,
+                "halfRegistrations": 1,
+                "subscriptionRegistrations": 0,
+                "createdAt": "2025-08-23T22:51:06.141Z",
+                "updatedAt": "2025-08-23T22:51:06.141Z"
+              }
+            ]
+          },
+          {
+            "id": "cmeourj3x00058ozu06swhlg0",
+            "yearId": "cmeehchya00008o7fa773fubk",
+            "programTypeId": "cmeeh77lm00038oyhljp12phq",
+            "fullPrice": 62500,
+            "halfPrice": 31250,
+            "subscriptionPrice": null,
+            "venueSplitPercent": 50,
+            "createdAt": "2025-08-23T22:50:23.998Z",
+            "updatedAt": "2025-08-23T22:50:23.998Z",
+            "programType": {
+              "id": "cmeeh77lm00038oyhljp12phq",
+              "name": "U21 Training",
+              "isMonthly": false,
+              "sessionHours": 2,
+              "createdAt": "2025-08-16T16:32:59.194Z",
+              "updatedAt": "2025-08-16T16:32:59.194Z"
+            },
+            "registrations": []
+          },
+          {
+            "id": "cmeourknj00078ozumit5a7yr",
+            "yearId": "cmeehchya00008o7fa773fubk",
+            "programTypeId": "cmeeh78jh00048oyhxzzgs2wm",
+            "fullPrice": 61500,
+            "halfPrice": null,
+            "subscriptionPrice": 61500,
+            "venueSplitPercent": 50,
+            "createdAt": "2025-08-23T22:50:26.000Z",
+            "updatedAt": "2025-08-23T22:50:26.000Z",
+            "programType": {
+              "id": "cmeeh78jh00048oyhxzzgs2wm",
+              "name": "Monthly Pass",
+              "isMonthly": true,
+              "sessionHours": 0,
+              "createdAt": "2025-08-16T16:33:00.413Z",
+              "updatedAt": "2025-08-16T16:33:00.413Z"
+            },
+            "registrations": [
+              {
+                "id": "cmeoush0500038okjatuuhtjv",
+                "programId": "cmeourknj00078ozumit5a7yr",
+                "seasonId": null,
+                "month": 1,
+                "fullRegistrations": 0,
+                "halfRegistrations": 0,
+                "subscriptionRegistrations": 5,
+                "createdAt": "2025-08-23T22:51:07.926Z",
+                "updatedAt": "2025-08-23T22:51:07.926Z"
+              }
+            ]
+          }
+        ],
+        "seasons": [
+          {
+            "id": "cmeeiibi000048o7fb0r6mpdd",
+            "name": "Spring",
+            "startDate": "2025-01-01T00:00:00.000Z",
+            "endDate": "2025-04-30T00:00:00.000Z",
+            "yearId": "cmeehchya00008o7fa773fubk",
+            "programId": null,
+            "createdAt": "2025-08-16T17:09:37.078Z",
+            "updatedAt": "2025-08-16T17:09:37.078Z"
+          },
+          {
+            "id": "cmeeiic1q00068o7ffx88o0h7",
+            "name": "Summer",
+            "startDate": "2025-05-01T00:00:00.000Z",
+            "endDate": "2025-08-31T00:00:00.000Z",
+            "yearId": "cmeehchya00008o7fa773fubk",
+            "programId": null,
+            "createdAt": "2025-08-16T17:09:37.790Z",
+            "updatedAt": "2025-08-16T17:09:37.790Z"
+          },
+          {
+            "id": "cmeeiicmv00088o7f4v4pyps3",
+            "name": "Fall",
+            "startDate": "2025-09-01T00:00:00.000Z",
+            "endDate": "2025-12-31T00:00:00.000Z",
+            "yearId": "cmeehchya00008o7fa773fubk",
+            "programId": null,
+            "createdAt": "2025-08-16T17:09:38.552Z",
+            "updatedAt": "2025-08-16T17:09:38.552Z"
+          },
+          {
+            "id": "cmeourm7r00098ozuynr5uvli",
+            "name": "Spring 2025",
+            "startDate": "2025-01-15T00:00:00.000Z",
+            "endDate": "2025-04-30T00:00:00.000Z",
+            "yearId": "cmeehchya00008o7fa773fubk",
+            "programId": null,
+            "createdAt": "2025-08-23T22:50:28.023Z",
+            "updatedAt": "2025-08-23T22:50:28.023Z"
+          },
+          {
+            "id": "cmeournb9000b8ozusowonm23",
+            "name": "Summer 2025",
+            "startDate": "2025-05-01T00:00:00.000Z",
+            "endDate": "2025-08-31T00:00:00.000Z",
+            "yearId": "cmeehchya00008o7fa773fubk",
+            "programId": null,
+            "createdAt": "2025-08-23T22:50:29.446Z",
+            "updatedAt": "2025-08-23T22:50:29.446Z"
+          },
+          {
+            "id": "cmeouroea000d8ozu2zv80nn7",
+            "name": "Fall 2025",
+            "startDate": "2025-09-01T00:00:00.000Z",
+            "endDate": "2025-12-15T00:00:00.000Z",
+            "yearId": "cmeehchya00008o7fa773fubk",
+            "programId": null,
+            "createdAt": "2025-08-23T22:50:30.850Z",
+            "updatedAt": "2025-08-23T22:50:30.850Z"
+          }
+        ]
+      }
+    ],
+    "registrations": [
+      {
+        "id": "cmeeiitpq000a8o7fxenefv35",
+        "programId": "cmeehdht900028o7fduxvp5b1",
+        "seasonId": "cmeeiicmv00088o7f4v4pyps3",
+        "month": null,
+        "fullRegistrations": 3,
+        "halfRegistrations": 0,
+        "subscriptionRegistrations": 0,
+        "createdAt": "2025-08-16T17:10:00.686Z",
+        "updatedAt": "2025-08-16T17:11:11.092Z",
+        "program": {
+          "id": "cmeehdht900028o7fduxvp5b1",
+          "yearId": "cmeehchya00008o7fa773fubk",
+          "programTypeId": "cmeeh75p700018oyhqyechfk8",
+          "fullPrice": 50000,
+          "halfPrice": 25000,
+          "subscriptionPrice": 61500,
+          "venueSplitPercent": 50,
+          "createdAt": "2025-08-16T16:37:52.363Z",
+          "updatedAt": "2025-08-16T16:37:52.363Z",
+          "programType": {
+            "id": "cmeeh75p700018oyhqyechfk8",
+            "name": "Kids Training",
+            "isMonthly": false,
+            "sessionHours": 1.5,
+            "createdAt": "2025-08-16T16:32:56.731Z",
+            "updatedAt": "2025-08-16T16:32:56.731Z"
+          },
+          "year": {
+            "id": "cmeehchya00008o7fa773fubk",
+            "year": 2025,
+            "createdAt": "2025-08-16T16:37:05.890Z",
+            "updatedAt": "2025-08-16T16:37:05.890Z"
+          }
+        },
+        "season": {
+          "id": "cmeeiicmv00088o7f4v4pyps3",
+          "name": "Fall",
+          "startDate": "2025-09-01T00:00:00.000Z",
+          "endDate": "2025-12-31T00:00:00.000Z",
+          "yearId": "cmeehchya00008o7fa773fubk",
+          "programId": null,
+          "createdAt": "2025-08-16T17:09:38.552Z",
+          "updatedAt": "2025-08-16T17:09:38.552Z"
+        }
+      },
+      {
+        "id": "cmeousfml00018okj4ehg2unj",
+        "programId": "cmeourhiq00038ozu3y3mlhbv",
+        "seasonId": "cmeeiibi000048o7fb0r6mpdd",
+        "month": null,
+        "fullRegistrations": 13,
+        "halfRegistrations": 1,
+        "subscriptionRegistrations": 0,
+        "createdAt": "2025-08-23T22:51:06.141Z",
+        "updatedAt": "2025-08-23T22:51:06.141Z",
+        "program": {
+          "id": "cmeourhiq00038ozu3y3mlhbv",
+          "yearId": "cmeehchya00008o7fa773fubk",
+          "programTypeId": "cmeeh76ni00028oyh244j5zq2",
+          "fullPrice": 50000,
+          "halfPrice": 25000,
+          "subscriptionPrice": null,
+          "venueSplitPercent": 50,
+          "createdAt": "2025-08-23T22:50:21.939Z",
+          "updatedAt": "2025-08-23T22:50:21.939Z",
+          "programType": {
+            "id": "cmeeh76ni00028oyh244j5zq2",
+            "name": "U16 Training",
+            "isMonthly": false,
+            "sessionHours": 1.5,
+            "createdAt": "2025-08-16T16:32:57.966Z",
+            "updatedAt": "2025-08-16T16:32:57.966Z"
+          },
+          "year": {
+            "id": "cmeehchya00008o7fa773fubk",
+            "year": 2025,
+            "createdAt": "2025-08-16T16:37:05.890Z",
+            "updatedAt": "2025-08-16T16:37:05.890Z"
+          }
+        },
+        "season": {
+          "id": "cmeeiibi000048o7fb0r6mpdd",
+          "name": "Spring",
+          "startDate": "2025-01-01T00:00:00.000Z",
+          "endDate": "2025-04-30T00:00:00.000Z",
+          "yearId": "cmeehchya00008o7fa773fubk",
+          "programId": null,
+          "createdAt": "2025-08-16T17:09:37.078Z",
+          "updatedAt": "2025-08-16T17:09:37.078Z"
+        }
+      },
+      {
+        "id": "cmeoush0500038okjatuuhtjv",
+        "programId": "cmeourknj00078ozumit5a7yr",
+        "seasonId": null,
+        "month": 1,
+        "fullRegistrations": 0,
+        "halfRegistrations": 0,
+        "subscriptionRegistrations": 5,
+        "createdAt": "2025-08-23T22:51:07.926Z",
+        "updatedAt": "2025-08-23T22:51:07.926Z",
+        "program": {
+          "id": "cmeourknj00078ozumit5a7yr",
+          "yearId": "cmeehchya00008o7fa773fubk",
+          "programTypeId": "cmeeh78jh00048oyhxzzgs2wm",
+          "fullPrice": 61500,
+          "halfPrice": null,
+          "subscriptionPrice": 61500,
+          "venueSplitPercent": 50,
+          "createdAt": "2025-08-23T22:50:26.000Z",
+          "updatedAt": "2025-08-23T22:50:26.000Z",
+          "programType": {
+            "id": "cmeeh78jh00048oyhxzzgs2wm",
+            "name": "Monthly Pass",
+            "isMonthly": true,
+            "sessionHours": 0,
+            "createdAt": "2025-08-16T16:33:00.413Z",
+            "updatedAt": "2025-08-16T16:33:00.413Z"
+          },
+          "year": {
+            "id": "cmeehchya00008o7fa773fubk",
+            "year": 2025,
+            "createdAt": "2025-08-16T16:37:05.890Z",
+            "updatedAt": "2025-08-16T16:37:05.890Z"
+          }
+        },
+        "season": null
+      }
+    ],
+    "programTypes": [
+      {
+        "id": "cmeeh75p700018oyhqyechfk8",
+        "name": "Kids Training",
+        "isMonthly": false,
+        "sessionHours": 1.5,
+        "createdAt": "2025-08-16T16:32:56.731Z",
+        "updatedAt": "2025-08-16T16:32:56.731Z"
+      },
+      {
+        "id": "cmeeh76ni00028oyh244j5zq2",
+        "name": "U16 Training",
+        "isMonthly": false,
+        "sessionHours": 1.5,
+        "createdAt": "2025-08-16T16:32:57.966Z",
+        "updatedAt": "2025-08-16T16:32:57.966Z"
+      },
+      {
+        "id": "cmeeh77lm00038oyhljp12phq",
+        "name": "U21 Training",
+        "isMonthly": false,
+        "sessionHours": 2,
+        "createdAt": "2025-08-16T16:32:59.194Z",
+        "updatedAt": "2025-08-16T16:32:59.194Z"
+      },
+      {
+        "id": "cmeeh78jh00048oyhxzzgs2wm",
+        "name": "Monthly Pass",
+        "isMonthly": true,
+        "sessionHours": 0,
+        "createdAt": "2025-08-16T16:33:00.413Z",
+        "updatedAt": "2025-08-16T16:33:00.413Z"
+      },
+      {
+        "id": "cmeeh79hg00058oyhebyl5yzh",
+        "name": "Foundation Course",
+        "isMonthly": true,
+        "sessionHours": 0,
+        "createdAt": "2025-08-16T16:33:01.636Z",
+        "updatedAt": "2025-08-16T16:33:01.636Z"
+      },
+      {
+        "id": "cmeeh74rd00008oyhy0apgdd9",
+        "name": "Adult Training",
+        "isMonthly": true,
+        "sessionHours": 1.5,
+        "createdAt": "2025-08-16T16:32:55.513Z",
+        "updatedAt": "2025-08-23T22:55:12.869Z"
+      }
+    ],
+    "instructors": [
+      {
+        "id": "cmeeh7u1000068oadwa24ffyc",
+        "name": "Valgerður",
+        "hourlyWage": 3250,
+        "createdAt": "2025-08-16T16:33:28.260Z",
+        "updatedAt": "2025-08-23T22:47:28.106Z"
+      },
+      {
+        "id": "cmeeh7v2500078oadhisqhyls",
+        "name": "Heba",
+        "hourlyWage": 3000,
+        "createdAt": "2025-08-16T16:33:29.598Z",
+        "updatedAt": "2025-08-23T22:47:29.475Z"
+      },
+      {
+        "id": "cmeeh7w2200088oadolu6kcn8",
+        "name": "Unnur",
+        "hourlyWage": 2000,
+        "createdAt": "2025-08-16T16:33:30.891Z",
+        "updatedAt": "2025-08-23T22:47:30.855Z"
+      },
+      {
+        "id": "cmeeh7x2q00098oadwueyqo56",
+        "name": "Ragnar",
+        "hourlyWage": 2750,
+        "createdAt": "2025-08-16T16:33:32.211Z",
+        "updatedAt": "2025-08-23T22:47:32.252Z"
+      },
+      {
+        "id": "cmeeh7y33000a8oad2gnk9i33",
+        "name": "Sara",
+        "hourlyWage": 2400,
+        "createdAt": "2025-08-16T16:33:33.519Z",
+        "updatedAt": "2025-08-23T22:47:33.637Z"
+      },
+      {
+        "id": "cmeeh7z3f000b8oadyhcumour",
+        "name": "Vala",
+        "hourlyWage": 3250,
+        "createdAt": "2025-08-16T16:33:34.828Z",
+        "updatedAt": "2025-08-23T22:47:35.010Z"
+      }
+    ]
+  }
+}
