@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Core entities
+model Instructor {
+  id        String @id @default(cuid())
+  name      String
+  hourlyWage Int   // in ISK
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  programAssignments ProgramInstructor[]
+  
+  @@map("instructors")
+}
+
+model Year {
+  id        String @id @default(cuid())
+  year      Int    @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  programs Program[]
+  seasons  Season[]
+  
+  @@map("years")
+}
+
+model ProgramType {
+  id          String @id @default(cuid())
+  name        String @unique // "Adult Training", "Kids Training", "U16", "U21", "Monthly Pass", "Foundation Course"
+  isMonthly   Boolean @default(false) // true for monthly programs, false for seasonal
+  sessionHours Float @default(1.5) // hours per session (configurable)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  programs Program[]
+  
+  @@map("program_types")
+}
+
+model Program {
+  id              String @id @default(cuid())
+  yearId          String
+  programTypeId   String
+  fullPrice       Int    // price for full registration in ISK
+  halfPrice       Int?   // price for half registration (optional)
+  subscriptionPrice Int? // additional price for subscription (optional)
+  venueSplitPercent Float @default(50.0) // percentage that goes to venue
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  year         Year @relation(fields: [yearId], references: [id])
+  programType  ProgramType @relation(fields: [programTypeId], references: [id])
+  seasons      Season[]
+  instructors  ProgramInstructor[]
+  registrations Registration[]
+  
+  @@unique([yearId, programTypeId])
+  @@map("programs")
+}
+
+model Season {
+  id        String @id @default(cuid())
+  name      String // "Spring", "Summer", "Fall"
+  startDate DateTime
+  endDate   DateTime
+  yearId    String
+  programId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  year     Year @relation(fields: [yearId], references: [id])
+  program  Program? @relation(fields: [programId], references: [id])
+  registrations Registration[]
+  sessions ProgramSession[]
+  
+  @@map("seasons")
+}
+
+model ProgramInstructor {
+  id           String @id @default(cuid())
+  programId    String
+  instructorId String
+  seasonId     String?
+  workDays     Json   // array of days like ["MONDAY", "WEDNESDAY", "FRIDAY"]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relations
+  program    Program @relation(fields: [programId], references: [id])
+  instructor Instructor @relation(fields: [instructorId], references: [id])
+  
+  @@unique([programId, instructorId, seasonId])
+  @@map("program_instructors")
+}
+
+model Registration {
+  id               String @id @default(cuid())
+  programId        String
+  seasonId         String?
+  month            Int?    // for monthly programs
+  fullRegistrations Int @default(0)
+  halfRegistrations Int @default(0)
+  subscriptionRegistrations Int @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  // Relations
+  program Program @relation(fields: [programId], references: [id])
+  season  Season? @relation(fields: [seasonId], references: [id])
+  
+  // Ensure one registration per program/season or program/month
+  @@unique([programId, seasonId])
+  @@unique([programId, month])
+  @@map("registrations")
+}
+
+model ProgramSession {
+  id           String @id @default(cuid())
+  seasonId     String
+  instructorId String
+  date         DateTime
+  hours        Float
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relations
+  season Season @relation(fields: [seasonId], references: [id])
+  
+  @@map("program_sessions")
+}
