@@ -6,7 +6,11 @@ export default async function YearsPage() {
     include: {
       programs: {
         include: {
-          programType: true
+          programType: true,
+          pricingOptions: {
+            where: { isActive: true },
+            orderBy: { order: 'asc' }
+          }
         }
       }
     },
@@ -44,18 +48,48 @@ export default async function YearsPage() {
 
               {year.programs.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {year.programs.map((program) => (
+                  {year.programs.map((program: any) => (
                     <div key={program.id} className="bg-gray-50 p-4 rounded-md">
-                      <h3 className="font-medium text-gray-900">{program.programType.name}</h3>
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="font-medium text-gray-900">
+                          {program.name || program.programType?.name || 'Custom Program'}
+                        </h3>
+                        {program.pricingOptions.length > 0 && (
+                          <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                            Flexible
+                          </span>
+                        )}
+                      </div>
                       <div className="mt-2 text-sm text-gray-600">
-                        <p>Full Price: {program.fullPrice.toLocaleString()} ISK</p>
-                        {program.halfPrice && (
-                          <p>Half Price: {program.halfPrice.toLocaleString()} ISK</p>
+                        {/* Show flexible pricing options if available */}
+                        {program.pricingOptions.length > 0 ? (
+                          <div className="space-y-1">
+                            {program.pricingOptions.slice(0, 2).map((option: any) => (
+                              <p key={option.id}>
+                                {option.name}: {option.price.toLocaleString()} ISK
+                              </p>
+                            ))}
+                            {program.pricingOptions.length > 2 && (
+                              <p className="text-gray-500 italic">
+                                +{program.pricingOptions.length - 2} more options
+                              </p>
+                            )}
+                          </div>
+                        ) : (
+                          /* Fallback to legacy pricing */
+                          <>
+                            <p>Full Price: {program.fullPrice.toLocaleString()} ISK</p>
+                            {program.halfPrice && (
+                              <p>Half Price: {program.halfPrice.toLocaleString()} ISK</p>
+                            )}
+                            {program.subscriptionPrice && (
+                              <p>With Subscription: {program.subscriptionPrice.toLocaleString()} ISK</p>
+                            )}
+                          </>
                         )}
-                        {program.subscriptionPrice && (
-                          <p>With Subscription: {program.subscriptionPrice.toLocaleString()} ISK</p>
-                        )}
-                        <p>Venue Split: {program.venueSplitPercent}%</p>
+                        <p className="mt-1 text-gray-500">
+                          Venue Split: {program.venueSplitPercentNew || program.venueSplitPercent}%
+                        </p>
                       </div>
                     </div>
                   ))}
