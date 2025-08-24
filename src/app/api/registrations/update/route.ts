@@ -5,11 +5,11 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { programId, month, pricingOptionId, quantity } = body
+    const { programId, month, seasonId, pricingOptionId, quantity } = body
 
-    if (!programId || !month || !pricingOptionId || quantity === undefined) {
+    if (!programId || (!month && !seasonId) || !pricingOptionId || quantity === undefined) {
       return NextResponse.json(
-        { message: 'Missing required fields: programId, month, pricingOptionId, quantity' },
+        { message: 'Missing required fields: programId, (month OR seasonId), pricingOptionId, quantity' },
         { status: 400 }
       )
     }
@@ -19,12 +19,13 @@ export async function POST(request: NextRequest) {
 
     // Update registration in a transaction
     const result = await prisma.$transaction(async (tx) => {
-      // Find or create registration for this program/month
+      // Find or create registration for this program/month or season
+      const whereClause = month 
+        ? { programId, month: parseInt(month) }
+        : { programId, seasonId }
+
       let registration = await tx.registration.findFirst({
-        where: {
-          programId,
-          month: parseInt(month)
-        },
+        where: whereClause,
         include: {
           entries: true
         }
@@ -32,15 +33,17 @@ export async function POST(request: NextRequest) {
 
       if (!registration) {
         // Create new registration
+        const createData = {
+          programId,
+          ...(month ? { month: parseInt(month) } : { seasonId }),
+          // Legacy fields (set to 0 for now)
+          fullRegistrations: 0,
+          halfRegistrations: 0,
+          subscriptionRegistrations: 0
+        }
+        
         registration = await tx.registration.create({
-          data: {
-            programId,
-            month: parseInt(month),
-            // Legacy fields (set to 0 for now)
-            fullRegistrations: 0,
-            halfRegistrations: 0,
-            subscriptionRegistrations: 0
-          },
+          data: createData,
           include: {
             entries: true
           }

@@ -28,7 +28,6 @@ export default async function DashboardPage({ searchParams }: PageProps) {
             orderBy: { order: 'asc' }
           },
           registrations: {
-            where: { month: currentMonth },
             include: {
               entries: {
                 include: {
@@ -116,12 +115,21 @@ export default async function DashboardPage({ searchParams }: PageProps) {
                   key={program.id}
                   program={program}
                   currentMonth={currentMonth}
+                  currentSeason={currentSeason}
                   isMonthly={false}
                 />
               ))}
             </div>
           </div>
         )}
+
+        {/* Debug Info - Temporary */}
+        <div className="mb-8 p-4 bg-gray-100 rounded text-sm">
+          <div>Debug Info:</div>
+          <div>Current Season: {currentSeason?.name || 'None'}</div>
+          <div>Seasonal Programs: {seasonalPrograms.length}</div>
+          <div>Monthly Programs: {monthlyPrograms.length}</div>
+        </div>
 
         {/* Monthly Programs */}
         {monthlyPrograms.length > 0 && (

@@ -16,7 +16,8 @@ interface ProgramCardProps {
     }[]
     registrations: {
       id: string
-      month: number
+      month?: number
+      seasonId?: string
       entries: {
         id: string
         quantity: number
@@ -31,6 +32,10 @@ interface ProgramCardProps {
     venueSplitPercent: number
   }
   currentMonth: number
+  currentSeason?: {
+    id: string
+    name: string
+  } | null
   isMonthly: boolean
 }
 
@@ -39,11 +44,13 @@ interface RegistrationUpdate {
   quantity: number
 }
 
-export function ProgramCard({ program, currentMonth, isMonthly }: ProgramCardProps) {
+export function ProgramCard({ program, currentMonth, currentSeason, isMonthly }: ProgramCardProps) {
   const [isUpdating, setIsUpdating] = useState<string | null>(null)
   
-  // Find current month's registration
-  const currentRegistration = program.registrations.find(r => r.month === currentMonth)
+  // Find appropriate registration (monthly or seasonal)
+  const currentRegistration = isMonthly 
+    ? program.registrations.find(r => r.month === currentMonth)
+    : program.registrations.find(r => r.seasonId === currentSeason?.id)
   
   // Create a map of current quantities
   const currentQuantities = new Map<string, number>()
@@ -80,7 +87,8 @@ export function ProgramCard({ program, currentMonth, isMonthly }: ProgramCardPro
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           programId: program.id,
-          month: currentMonth,
+          month: isMonthly ? currentMonth : undefined,
+          seasonId: isMonthly ? undefined : currentSeason?.id,
           pricingOptionId,
           quantity: Math.max(0, newQuantity) // Ensure non-negative
         })
