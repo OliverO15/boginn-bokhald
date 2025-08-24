@@ -1,6 +1,30 @@
 import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
 
+export async function GET() {
+  try {
+    const years = await prisma.year.findMany({
+      orderBy: { year: 'desc' },
+      include: {
+        programs: {
+          include: {
+            programType: true,
+            seasons: true
+          }
+        }
+      }
+    })
+
+    return NextResponse.json(years)
+  } catch (error) {
+    console.error('Error fetching years:', error)
+    return NextResponse.json(
+      { message: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()

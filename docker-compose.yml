@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:16
+    container_name: archery-db
+    environment:
+      POSTGRES_USER: archery
+      POSTGRES_PASSWORD: archery
+      POSTGRES_DB: archery
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: archery-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5051:80"
+    depends_on:
+      - db
+    restart: unless-stopped
+
+volumes:
+  db_data:

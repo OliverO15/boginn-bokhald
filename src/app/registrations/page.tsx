@@ -2,6 +2,9 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { calculateRevenue, calculateVenueCosts } from '@/lib/calculations'
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 export default async function RegistrationsPage() {
   const registrations = await prisma.registration.findMany({
     include: {
@@ -15,7 +18,7 @@ export default async function RegistrationsPage() {
     },
     orderBy: [
       { program: { year: { year: 'desc' } } },
-      { program: { programType: { name: 'asc' } } }
+      { program: { name: 'asc' } }
     ]
   })
 
@@ -91,7 +94,7 @@ export default async function RegistrationsPage() {
                           return (
                             <div key={registration.id} className="border border-gray-200 rounded-lg p-4">
                               <div className="flex justify-between items-start mb-3">
-                                <h3 className="font-medium text-gray-900">{registration.program.programType.name}</h3>
+                                <h3 className="font-medium text-gray-900">{registration.program.programType?.name || registration.program.name || 'Program'}</h3>
                                 <Link
                                   href={`/registrations/${registration.id}/edit`}
                                   className="text-blue-600 hover:text-blue-800 text-sm"

@@ -17,7 +17,12 @@ const MONTH_NAMES = [
   'July', 'August', 'September', 'October', 'November', 'December'
 ]
 
-export function MonthSummary({ year, month, totals, instructorWages = 0 }: MonthSummaryProps) {
+export function MonthSummary({ 
+  year, 
+  month, 
+  totals, 
+  instructorWages = 0
+}: MonthSummaryProps) {
   const monthName = MONTH_NAMES[month - 1]
   
   // Calculate final profit including instructor wages

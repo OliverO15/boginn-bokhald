@@ -1,6 +1,9 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 export default async function ProgramTypesPage() {
   const programTypes = await prisma.programType.findMany({
     include: {

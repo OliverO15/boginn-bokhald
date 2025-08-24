@@ -9,10 +9,23 @@
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "db:seed": "tsx prisma/seed.ts"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:reset": "docker compose down -v && docker compose up -d",
+    "db:migrate": "prisma migrate deploy",
+    "db:generate": "prisma generate",
+    "db:setup": "npm run db:migrate && npm run db:generate && npm run db:seed",
+    "build:prod": "npm run build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/ && npm run db:generate",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop boginn-bokhald",
+    "pm2:restart": "pm2 restart boginn-bokhald",
+    "pm2:logs": "pm2 logs boginn-bokhald",
+    "deploy": "npm run db:up && npm run build:prod && npm run pm2:start",
+    "local:check": "node scripts/check-setup.js",
+    "local:start": "./scripts/start.sh",
+    "local:stop": "./scripts/stop.sh",
+    "local:restart": "npm run local:stop && npm run local:start"
   },
   "dependencies": {
     "@prisma/client": "^6.14.0",
@@ -20,6 +33,9 @@
     "next": "15.4.6",
     "react": "19.1.0",
     "react-dom": "19.1.0"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -1,6 +1,9 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 
+// Force dynamic rendering - this page should not be statically generated
+export const dynamic = 'force-dynamic'
+
 export default async function InstructorsPage() {
   const instructors = await prisma.instructor.findMany({
     include: {

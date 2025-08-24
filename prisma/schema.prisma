@@ -34,6 +34,7 @@ model Year {
   // Relations
   programs Program[]
   seasons  Season[]
+  venuePayments VenuePayment[]
   
   @@map("years")
 }
@@ -166,6 +167,7 @@ model Season {
   program  Program? @relation(fields: [programId], references: [id])
   registrations Registration[]
   sessions ProgramSession[]
+  venuePayments VenuePayment[]
   
   @@map("seasons")
 }
@@ -249,4 +251,25 @@ model ProgramSession {
   season Season @relation(fields: [seasonId], references: [id])
   
   @@map("program_sessions")
+}
+
+// Venue Payments - Manual tracking of actual venue payments made
+model VenuePayment {
+  id          String @id @default(cuid())
+  yearId      String
+  seasonId    String? // For seasonal programs
+  month       Int?    // For monthly programs (1-12) or month within season
+  amount      Int     // Amount paid in ISK
+  description String? // Optional description/notes
+  paidDate    DateTime @default(now()) // When payment was actually made
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  year   Year    @relation(fields: [yearId], references: [id])
+  season Season? @relation(fields: [seasonId], references: [id])
+  
+  // Ensure one payment per season/month combination
+  @@unique([yearId, seasonId, month])
+  @@map("venue_payments")
 }

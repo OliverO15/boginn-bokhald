@@ -80,7 +80,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
   const monthlyPrograms = year.programs.filter(p => p.isMonthly)
 
   // Calculate month totals including instructor wages
-  const monthTotals = calculateMonthTotals(year.programs, currentMonth, currentSeason)
+  const monthTotals = calculateMonthlyTotals(year.programs, currentMonth, currentSeason)
   const instructorWages = calculateInstructorWagesForDashboard(year.programs, currentMonth, currentYear, currentSeason)
 
   return (
@@ -130,18 +130,6 @@ export default async function DashboardPage({ searchParams }: PageProps) {
           </div>
         )}
 
-        {/* Debug Info - Temporary */}
-        <div className="mb-8 p-4 bg-gray-100 rounded text-sm">
-          <div>Debug Info:</div>
-          <div>Current Season: {currentSeason?.name || 'None'} (ID: {currentSeason?.id || 'None'})</div>
-          <div>Seasonal Programs: {seasonalPrograms.length}</div>
-          <div>Monthly Programs: {monthlyPrograms.length}</div>
-          <div>Current Month: {currentMonth}</div>
-          <div>Current Year: {currentYear}</div>
-          {seasonalPrograms.map(p => (
-            <div key={p.id}>Program: {p.name} - Registrations: {p.registrations.length}</div>
-          ))}
-        </div>
 
         {/* Monthly Programs */}
         {monthlyPrograms.length > 0 && (
@@ -188,8 +176,8 @@ export default async function DashboardPage({ searchParams }: PageProps) {
   )
 }
 
-// Helper function to calculate month totals
-function calculateMonthTotals(programs: any[], month: number, currentSeason?: any) {
+// Helper function to calculate monthly totals
+function calculateMonthlyTotals(programs: any[], month: number, currentSeason?: any) {
   let totalRevenue = 0
   let totalVenueCosts = 0
 
@@ -209,7 +197,7 @@ function calculateMonthTotals(programs: any[], month: number, currentSeason?: an
         }
       }
     } else {
-      // For seasonal programs, include registrations from the current season
+      // For seasonal programs in monthly view, include registrations from the current season divided by 4
       const seasonalRegistrations = program.registrations.filter((r: any) => 
         r.seasonId === currentSeason?.id && r.month === null
       )
@@ -219,8 +207,9 @@ function calculateMonthTotals(programs: any[], month: number, currentSeason?: an
           const revenue = entry.quantity * entry.pricingOption.price
           const venueCost = revenue * ((program.venueSplitPercentNew || program.venueSplitPercent) / 100)
           
-          totalRevenue += revenue
-          totalVenueCosts += venueCost
+          // Divide by 4 for consistent monthly view
+          totalRevenue += revenue / 4
+          totalVenueCosts += venueCost / 4
         }
       }
     }
