@@ -7,6 +7,7 @@ interface ProgramCardProps {
   program: {
     id: string
     name: string | null
+    yearId: string
     programType?: { name: string } | null
     pricingOptions: {
       id: string
@@ -294,10 +295,10 @@ export function ProgramCard({ program, currentMonth, currentSeason, isMonthly }:
       {/* Actions */}
       <div className="mt-4 pt-4 border-t border-gray-200">
         <Link
-          href={`/years/${program.id}/programs/${program.id}/details`}
+          href={`/years/${program.yearId}/programs/${program.id}/details`}
           className="text-blue-600 hover:text-blue-800 text-sm font-medium"
         >
-          View Details →
+          View Details & Assign Instructors →
         </Link>
       </div>
     </div>
