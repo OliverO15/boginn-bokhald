@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 interface ProgramCardProps {
@@ -39,34 +39,68 @@ interface ProgramCardProps {
   isMonthly: boolean
 }
 
-interface RegistrationUpdate {
-  pricingOptionId: string
-  quantity: number
-}
-
 export function ProgramCard({ program, currentMonth, currentSeason, isMonthly }: ProgramCardProps) {
-  const [isUpdating, setIsUpdating] = useState<string | null>(null)
+  const [isUpdating, setIsUpdating] = useState(false)
+  const [hasChanges, setHasChanges] = useState(false)
+  const [localQuantities, setLocalQuantities] = useState<Map<string, number>>(new Map())
   
   // Find appropriate registration (monthly or seasonal)
   const currentRegistration = isMonthly 
     ? program.registrations.find(r => r.month === currentMonth)
     : program.registrations.find(r => r.seasonId === currentSeason?.id)
   
-  // Create a map of current quantities
-  const currentQuantities = new Map<string, number>()
-  if (currentRegistration) {
-    currentRegistration.entries.forEach(entry => {
-      currentQuantities.set(entry.pricingOption.id, entry.quantity)
-    })
+  // For monthly programs, also find previous month's registration for persistence
+  const previousMonthRegistration = isMonthly 
+    ? program.registrations.find(r => r.month === currentMonth - 1)
+    : null
+
+  // Initialize local quantities from current registration or previous month (for monthly programs)
+  useEffect(() => {
+    const initialQuantities = new Map<string, number>()
+    
+    if (currentRegistration) {
+      // Use current month's registration
+      currentRegistration.entries.forEach(entry => {
+        initialQuantities.set(entry.pricingOption.id, entry.quantity)
+      })
+    } else if (isMonthly && previousMonthRegistration) {
+      // For monthly programs with no current registration, copy from previous month
+      previousMonthRegistration.entries.forEach(entry => {
+        initialQuantities.set(entry.pricingOption.id, entry.quantity)
+      })
+    }
+    
+    setLocalQuantities(initialQuantities)
+  }, [program.id, currentMonth, currentRegistration, previousMonthRegistration, isMonthly])
+
+  // Get quantity for display (local changes take precedence)
+  const getQuantity = (pricingOptionId: string): number => {
+    if (localQuantities.has(pricingOptionId)) {
+      return localQuantities.get(pricingOptionId) || 0
+    }
+    
+    // Fallback to current registration
+    if (currentRegistration) {
+      const entry = currentRegistration.entries.find(e => e.pricingOption.id === pricingOptionId)
+      return entry?.quantity || 0
+    }
+    
+    // For monthly programs, fallback to previous month
+    if (isMonthly && previousMonthRegistration) {
+      const entry = previousMonthRegistration.entries.find(e => e.pricingOption.id === pricingOptionId)
+      return entry?.quantity || 0
+    }
+    
+    return 0
   }
 
-  // Calculate totals
+  // Calculate totals based on current display quantities
   let totalRevenue = 0
   let totalVenueCosts = 0
   let hasRegistrations = false
 
   program.pricingOptions.forEach(option => {
-    const quantity = currentQuantities.get(option.id) || 0
+    const quantity = getQuantity(option.id)
     if (quantity > 0) {
       hasRegistrations = true
       const revenue = quantity * option.price
@@ -78,33 +112,74 @@ export function ProgramCard({ program, currentMonth, currentSeason, isMonthly }:
 
   const totalProfit = totalRevenue - totalVenueCosts
 
-  const updateRegistration = async (pricingOptionId: string, newQuantity: number) => {
-    setIsUpdating(pricingOptionId)
+  // Local quantity update (no API call)
+  const updateLocalQuantity = (pricingOptionId: string, newQuantity: number) => {
+    const safeQuantity = Math.max(0, newQuantity)
+    setLocalQuantities(prev => {
+      const updated = new Map(prev)
+      updated.set(pricingOptionId, safeQuantity)
+      return updated
+    })
+    setHasChanges(true)
+  }
+
+  // Apply all changes to the server
+  const applyChanges = async () => {
+    setIsUpdating(true)
     
     try {
-      const response = await fetch('/api/registrations/update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          programId: program.id,
-          month: isMonthly ? currentMonth : undefined,
-          seasonId: isMonthly ? undefined : currentSeason?.id,
-          pricingOptionId,
-          quantity: Math.max(0, newQuantity) // Ensure non-negative
+      // Send all changes in parallel
+      const updates = Array.from(localQuantities.entries()).map(([pricingOptionId, quantity]) => 
+        fetch('/api/registrations/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            programId: program.id,
+            month: isMonthly ? currentMonth : undefined,
+            seasonId: isMonthly ? undefined : currentSeason?.id,
+            pricingOptionId,
+            quantity
+          })
         })
-      })
+      )
 
-      if (response.ok) {
+      const results = await Promise.all(updates)
+      
+      // Check if all requests succeeded
+      const allSucceeded = results.every(response => response.ok)
+      
+      if (allSucceeded) {
+        setHasChanges(false)
         // Refresh the page to show updated data
         window.location.reload()
       } else {
-        console.error('Failed to update registration')
+        console.error('Some registration updates failed')
+        alert('Some updates failed. Please try again.')
       }
     } catch (error) {
-      console.error('Error updating registration:', error)
+      console.error('Error applying changes:', error)
+      alert('Failed to apply changes. Please try again.')
     } finally {
-      setIsUpdating(null)
+      setIsUpdating(false)
     }
+  }
+
+  // Reset changes
+  const resetChanges = () => {
+    const originalQuantities = new Map<string, number>()
+    
+    if (currentRegistration) {
+      currentRegistration.entries.forEach(entry => {
+        originalQuantities.set(entry.pricingOption.id, entry.quantity)
+      })
+    } else if (isMonthly && previousMonthRegistration) {
+      previousMonthRegistration.entries.forEach(entry => {
+        originalQuantities.set(entry.pricingOption.id, entry.quantity)
+      })
+    }
+    
+    setLocalQuantities(originalQuantities)
+    setHasChanges(false)
   }
 
   const programDisplayName = program.name || program.programType?.name || 'Custom Program'
@@ -133,26 +208,28 @@ export function ProgramCard({ program, currentMonth, currentSeason, isMonthly }:
       {/* Registration Controls */}
       <div className="space-y-3 mb-4">
         {program.pricingOptions.map(option => {
-          const currentQuantity = currentQuantities.get(option.id) || 0
-          const isUpdatingThis = isUpdating === option.id
+          const currentQuantity = getQuantity(option.id)
+          const hasLocalChanges = localQuantities.has(option.id) && 
+            (!currentRegistration || !currentRegistration.entries.find(e => e.pricingOption.id === option.id) || 
+             currentQuantity !== (currentRegistration.entries.find(e => e.pricingOption.id === option.id)?.quantity || 0))
 
           return (
             <div key={option.id} className="flex items-center justify-between">
               <span className="text-sm text-gray-700">{option.name}:</span>
               <div className="flex items-center space-x-2">
                 <button
-                  onClick={() => updateRegistration(option.id, currentQuantity - 1)}
-                  disabled={isUpdatingThis || currentQuantity <= 0}
+                  onClick={() => updateLocalQuantity(option.id, currentQuantity - 1)}
+                  disabled={isUpdating || currentQuantity <= 0}
                   className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm"
                 >
                   ➖
                 </button>
-                <span className="w-8 text-center font-mono text-sm">
-                  {isUpdatingThis ? '...' : currentQuantity}
+                <span className={`w-8 text-center font-mono text-sm ${hasLocalChanges ? 'text-orange-600 font-bold' : ''}`}>
+                  {currentQuantity}
                 </span>
                 <button
-                  onClick={() => updateRegistration(option.id, currentQuantity + 1)}
-                  disabled={isUpdatingThis}
+                  onClick={() => updateLocalQuantity(option.id, currentQuantity + 1)}
+                  disabled={isUpdating}
                   className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm"
                 >
                   ➕
@@ -161,6 +238,26 @@ export function ProgramCard({ program, currentMonth, currentSeason, isMonthly }:
             </div>
           )
         })}
+        
+        {/* Apply/Reset buttons */}
+        {hasChanges && (
+          <div className="flex gap-2 pt-2 border-t border-gray-200">
+            <button
+              onClick={applyChanges}
+              disabled={isUpdating}
+              className="flex-1 bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isUpdating ? 'Applying...' : 'Apply Changes'}
+            </button>
+            <button
+              onClick={resetChanges}
+              disabled={isUpdating}
+              className="px-3 py-2 text-gray-600 border border-gray-300 rounded text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Reset
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Financial Summary */}
@@ -178,6 +275,19 @@ export function ProgramCard({ program, currentMonth, currentSeason, isMonthly }:
           <span className={totalProfit > 0 ? 'text-green-600' : 'text-gray-600'}>
             {totalProfit.toLocaleString()} ISK
           </span>
+        </div>
+        
+        {/* Temporary Debug Info */}
+        <div className="text-xs text-gray-500 border-t pt-2">
+          <div>Debug: Regs={program.registrations.length}, Current={currentRegistration ? 'Found' : 'None'}</div>
+          <div>Season: {currentSeason?.id?.slice(-8)}, IsMonthly: {isMonthly ? 'Yes' : 'No'}</div>
+          <div>Entries: {currentRegistration?.entries.length || 0}</div>
+          {isMonthly && !currentRegistration && previousMonthRegistration && (
+            <div className="text-orange-600">Using prev month: {previousMonthRegistration.entries.length} entries</div>
+          )}
+          {hasChanges && (
+            <div className="text-blue-600">Has unsaved changes</div>
+          )}
         </div>
       </div>
 
