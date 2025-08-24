@@ -32,7 +32,11 @@ export default async function YearProgramsPage({ params }: PageProps) {
     orderBy: { name: 'asc' }
   })
 
-  const configuredProgramTypes = new Set(year.programs.map(p => p.programType.id))
+  const configuredProgramTypes = new Set(
+    year.programs
+      .filter(p => p.programType) // Only include programs that have a programType
+      .map(p => p.programType!.id)
+  )
   const availableProgramTypes = programTypes.filter(pt => !configuredProgramTypes.has(pt.id))
 
   return (
