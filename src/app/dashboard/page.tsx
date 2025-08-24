@@ -74,7 +74,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
   const monthlyPrograms = year.programs.filter(p => p.isMonthly)
 
   // Calculate month totals
-  const monthTotals = calculateMonthTotals(year.programs, currentMonth)
+  const monthTotals = calculateMonthTotals(year.programs, currentMonth, currentSeason)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -126,9 +126,14 @@ export default async function DashboardPage({ searchParams }: PageProps) {
         {/* Debug Info - Temporary */}
         <div className="mb-8 p-4 bg-gray-100 rounded text-sm">
           <div>Debug Info:</div>
-          <div>Current Season: {currentSeason?.name || 'None'}</div>
+          <div>Current Season: {currentSeason?.name || 'None'} (ID: {currentSeason?.id || 'None'})</div>
           <div>Seasonal Programs: {seasonalPrograms.length}</div>
           <div>Monthly Programs: {monthlyPrograms.length}</div>
+          <div>Current Month: {currentMonth}</div>
+          <div>Current Year: {currentYear}</div>
+          {seasonalPrograms.map(p => (
+            <div key={p.id}>Program: {p.name} - Registrations: {p.registrations.length}</div>
+          ))}
         </div>
 
         {/* Monthly Programs */}
@@ -176,21 +181,39 @@ export default async function DashboardPage({ searchParams }: PageProps) {
 }
 
 // Helper function to calculate month totals
-function calculateMonthTotals(programs: any[], month: number) {
+function calculateMonthTotals(programs: any[], month: number, currentSeason?: any) {
   let totalRevenue = 0
   let totalVenueCosts = 0
 
   for (const program of programs) {
-    const monthlyRegistration = program.registrations.find((r: any) => r.month === month)
-    
-    if (monthlyRegistration) {
-      // Calculate from flexible pricing entries
-      for (const entry of monthlyRegistration.entries) {
-        const revenue = entry.quantity * entry.pricingOption.price
-        const venueCost = revenue * ((program.venueSplitPercentNew || program.venueSplitPercent) / 100)
-        
-        totalRevenue += revenue
-        totalVenueCosts += venueCost
+    // For monthly programs, find registrations for the specific month
+    if (program.isMonthly) {
+      const monthlyRegistration = program.registrations.find((r: any) => r.month === month)
+      
+      if (monthlyRegistration) {
+        // Calculate from flexible pricing entries
+        for (const entry of monthlyRegistration.entries) {
+          const revenue = entry.quantity * entry.pricingOption.price
+          const venueCost = revenue * ((program.venueSplitPercentNew || program.venueSplitPercent) / 100)
+          
+          totalRevenue += revenue
+          totalVenueCosts += venueCost
+        }
+      }
+    } else {
+      // For seasonal programs, include registrations from the current season
+      const seasonalRegistrations = program.registrations.filter((r: any) => 
+        r.seasonId === currentSeason?.id && r.month === null
+      )
+      
+      for (const registration of seasonalRegistrations) {
+        for (const entry of registration.entries) {
+          const revenue = entry.quantity * entry.pricingOption.price
+          const venueCost = revenue * ((program.venueSplitPercentNew || program.venueSplitPercent) / 100)
+          
+          totalRevenue += revenue
+          totalVenueCosts += venueCost
+        }
       }
     }
   }
