@@ -1,13 +1,13 @@
-import { prisma } from '@/lib/prisma'
-import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { prisma } from "@/lib/prisma";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
 interface PageProps {
-  params: Promise<{ yearId: string }>
+  params: Promise<{ yearId: string }>;
 }
 
 export default async function YearProgramsPage({ params }: PageProps) {
-  const { yearId } = await params
+  const { yearId } = await params;
 
   const year = await prisma.year.findUnique({
     where: { id: yearId },
@@ -17,34 +17,40 @@ export default async function YearProgramsPage({ params }: PageProps) {
           programType: true,
           pricingOptions: {
             where: { isActive: true },
-            orderBy: { order: 'asc' }
-          }
-        }
-      }
-    }
-  })
+            orderBy: { order: "asc" },
+          },
+        },
+      },
+    },
+  });
 
   if (!year) {
-    notFound()
+    notFound();
   }
 
   const programTypes = await prisma.programType.findMany({
-    orderBy: { name: 'asc' }
-  })
+    orderBy: { name: "asc" },
+  });
 
   const configuredProgramTypes = new Set(
     year.programs
-      .filter(p => p.programType) // Only include programs that have a programType
-      .map(p => p.programType!.id)
-  )
-  const availableProgramTypes = programTypes.filter(pt => !configuredProgramTypes.has(pt.id))
+      .filter((p) => p.programType) // Only include programs that have a programType
+      .map((p) => p.programType!.id)
+  );
+  const availableProgramTypes = programTypes.filter(
+    (pt) => !configuredProgramTypes.has(pt.id)
+  );
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Programs for {year.year}</h1>
-          <p className="text-gray-600 mt-2">Configure pricing and settings for each program type</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Programs for {year.year}
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Configure pricing and settings for each program type
+          </p>
         </div>
         <div className="flex gap-4">
           <Link
@@ -73,11 +79,16 @@ export default async function YearProgramsPage({ params }: PageProps) {
       {year.programs.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {year.programs.map((program) => (
-            <div key={program.id} className="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+            <div
+              key={program.id}
+              className="bg-white rounded-lg shadow-md border border-gray-200 p-6"
+            >
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900">
-                    {program.name || program.programType?.name || 'Custom Program'}
+                    {program.name ||
+                      program.programType?.name ||
+                      "Custom Program"}
                   </h3>
                   {program.pricingOptions.length > 0 && (
                     <span className="inline-block mt-1 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
@@ -105,24 +116,30 @@ export default async function YearProgramsPage({ params }: PageProps) {
                 <div className="flex justify-between">
                   <span>Program Type:</span>
                   <span className="font-medium">
-                    {program.programType ? (
-                      `${program.programType.isMonthly ? 'Monthly' : 'Seasonal'} 
-                      ${!program.programType.isMonthly ? ` (${program.programType.sessionHours}h per session)` : ''}`
-                    ) : (
-                      `${program.isMonthly ? 'Monthly' : 'Seasonal'} 
-                      ${!program.isMonthly && program.sessionDuration ? ` (${program.sessionDuration}h per session)` : ''}`
-                    )}
+                    {`${program.isMonthly ? "Monthly" : "Seasonal"} 
+                      ${
+                        !program.isMonthly && program.sessionDuration
+                          ? ` (${program.sessionDuration}h per session)`
+                          : ""
+                      }`}
                   </span>
                 </div>
 
                 {/* Show flexible pricing options if available */}
                 {program.pricingOptions.length > 0 ? (
                   <div className="space-y-2">
-                    <div className="font-medium text-gray-700">Pricing Options:</div>
+                    <div className="font-medium text-gray-700">
+                      Pricing Options:
+                    </div>
                     {program.pricingOptions.map((option: any) => (
-                      <div key={option.id} className="flex justify-between pl-4">
+                      <div
+                        key={option.id}
+                        className="flex justify-between pl-4"
+                      >
                         <span>{option.name}:</span>
-                        <span className="font-medium">{option.price.toLocaleString()} ISK</span>
+                        <span className="font-medium">
+                          {option.price.toLocaleString()} ISK
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -131,18 +148,24 @@ export default async function YearProgramsPage({ params }: PageProps) {
                   <>
                     <div className="flex justify-between">
                       <span>Full Price:</span>
-                      <span className="font-medium">{program.fullPrice.toLocaleString()} ISK</span>
+                      <span className="font-medium">
+                        {program.fullPrice.toLocaleString()} ISK
+                      </span>
                     </div>
                     {program.halfPrice && (
                       <div className="flex justify-between">
                         <span>Half Price:</span>
-                        <span className="font-medium">{program.halfPrice.toLocaleString()} ISK</span>
+                        <span className="font-medium">
+                          {program.halfPrice.toLocaleString()} ISK
+                        </span>
                       </div>
                     )}
                     {program.subscriptionPrice && (
                       <div className="flex justify-between">
                         <span>With Subscription:</span>
-                        <span className="font-medium">{program.subscriptionPrice.toLocaleString()} ISK</span>
+                        <span className="font-medium">
+                          {program.subscriptionPrice.toLocaleString()} ISK
+                        </span>
                       </div>
                     )}
                   </>
@@ -169,7 +192,9 @@ export default async function YearProgramsPage({ params }: PageProps) {
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-gray-500 text-lg mb-4">No programs configured for {year.year} yet.</p>
+          <p className="text-gray-500 text-lg mb-4">
+            No programs configured for {year.year} yet.
+          </p>
           <div className="flex gap-4 justify-center">
             <Link
               href={`/years/${yearId}/programs/flexible`}
@@ -197,5 +222,5 @@ export default async function YearProgramsPage({ params }: PageProps) {
         </div>
       )}
     </div>
-  )
+  );
 }

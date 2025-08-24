@@ -52,3 +52,4 @@ The application uses Prisma with PostgreSQL. The Prisma client is configured wit
 - Prisma client should be imported from `@/lib/prisma`
 - Follow Next.js conventions for page and layout components
 - Test the pages you are creating by going into them first and checking if they open without error.
+- don't create mock data unless I say so

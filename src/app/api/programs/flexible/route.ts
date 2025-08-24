@@ -1,5 +1,5 @@
-import { prisma } from '@/lib/prisma'
-import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/programs/flexible - Get all programs with flexible pricing
 export async function GET() {
@@ -8,7 +8,7 @@ export async function GET() {
       include: {
         pricingOptions: {
           where: { isActive: true },
-          orderBy: { order: 'asc' }
+          orderBy: { order: "asc" },
         },
         programType: true,
         year: true,
@@ -16,65 +16,76 @@ export async function GET() {
           include: {
             entries: {
               include: {
-                pricingOption: true
-              }
+                pricingOption: true,
+              },
             },
-            season: true
-          }
-        }
+            season: true,
+          },
+        },
       },
-      orderBy: [
-        { year: { year: 'desc' } },
-        { createdAt: 'desc' }
-      ]
-    })
+      orderBy: [{ year: { year: "desc" } }, { createdAt: "desc" }],
+    });
 
-    return NextResponse.json(programs)
+    return NextResponse.json(programs);
   } catch (error) {
-    console.error('Error fetching flexible programs:', error)
+    console.error("Error fetching flexible programs:", error);
     return NextResponse.json(
-      { message: 'Internal server error' },
+      { message: "Internal server error" },
       { status: 500 }
-    )
+    );
   }
 }
 
 // POST /api/programs/flexible - Create new program with custom pricing
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { 
-      yearId, 
+    const body = await request.json();
+    const {
+      yearId,
       programTypeId, // Optional for categorization
       name,
       sessionDuration,
       isMonthly,
       venueSplitPercent,
-      pricingOptions 
-    } = body
+      pricingOptions,
+    } = body;
 
     // Validate required fields
-    if (!yearId || !name || !sessionDuration || venueSplitPercent === undefined) {
+    if (
+      !yearId ||
+      !name ||
+      sessionDuration === undefined ||
+      venueSplitPercent === undefined
+    ) {
       return NextResponse.json(
-        { message: 'Missing required fields: yearId, name, sessionDuration, venueSplitPercent' },
+        {
+          message:
+            "Missing required fields: yearId, name, sessionDuration, venueSplitPercent",
+        },
         { status: 400 }
-      )
+      );
     }
 
-    if (!pricingOptions || !Array.isArray(pricingOptions) || pricingOptions.length === 0) {
+    if (
+      !pricingOptions ||
+      !Array.isArray(pricingOptions) ||
+      pricingOptions.length === 0
+    ) {
       return NextResponse.json(
-        { message: 'At least one pricing option is required' },
+        { message: "At least one pricing option is required" },
         { status: 400 }
-      )
+      );
     }
 
     // Validate pricing options
     for (const option of pricingOptions) {
       if (!option.name || !option.price || option.price <= 0) {
         return NextResponse.json(
-          { message: 'Each pricing option must have a name and positive price' },
+          {
+            message: "Each pricing option must have a name and positive price",
+          },
           { status: 400 }
-        )
+        );
       }
     }
 
@@ -92,26 +103,31 @@ export async function POST(request: NextRequest) {
           // Legacy fields - set defaults to maintain compatibility
           fullPrice: pricingOptions[0]?.price || 0,
           halfPrice: pricingOptions[1]?.price || null,
-          subscriptionPrice: pricingOptions.find(p => p.name.toLowerCase().includes('subscription'))?.price || null,
-          venueSplitPercent: venueSplitPercent
-        }
-      })
+          subscriptionPrice:
+            pricingOptions.find((p) =>
+              p.name.toLowerCase().includes("subscription")
+            )?.price || null,
+          venueSplitPercent: venueSplitPercent,
+        },
+      });
 
       // Create pricing options
-      const pricingOptionData = pricingOptions.map((option: any, index: number) => ({
-        programId: program.id,
-        name: option.name,
-        price: parseInt(option.price),
-        order: option.order !== undefined ? option.order : index,
-        isActive: option.isActive !== undefined ? option.isActive : true
-      }))
+      const pricingOptionData = pricingOptions.map(
+        (option: any, index: number) => ({
+          programId: program.id,
+          name: option.name,
+          price: parseInt(option.price),
+          order: option.order !== undefined ? option.order : index,
+          isActive: option.isActive !== undefined ? option.isActive : true,
+        })
+      );
 
       await tx.pricingOption.createMany({
-        data: pricingOptionData
-      })
+        data: pricingOptionData,
+      });
 
-      return program
-    })
+      return program;
+    });
 
     // Fetch the complete program data to return
     const completeProgram = await prisma.program.findUnique({
@@ -119,19 +135,19 @@ export async function POST(request: NextRequest) {
       include: {
         pricingOptions: {
           where: { isActive: true },
-          orderBy: { order: 'asc' }
+          orderBy: { order: "asc" },
         },
         programType: true,
-        year: true
-      }
-    })
+        year: true,
+      },
+    });
 
-    return NextResponse.json(completeProgram, { status: 201 })
+    return NextResponse.json(completeProgram, { status: 201 });
   } catch (error) {
-    console.error('Error creating flexible program:', error)
+    console.error("Error creating flexible program:", error);
     return NextResponse.json(
-      { message: 'Internal server error' },
+      { message: "Internal server error" },
       { status: 500 }
-    )
+    );
   }
 }

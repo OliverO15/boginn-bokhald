@@ -9,6 +9,7 @@ interface MonthSummaryProps {
     netProfit: number
     margin: number
   }
+  instructorWages?: number
 }
 
 const MONTH_NAMES = [
@@ -16,8 +17,13 @@ const MONTH_NAMES = [
   'July', 'August', 'September', 'October', 'November', 'December'
 ]
 
-export function MonthSummary({ year, month, totals }: MonthSummaryProps) {
+export function MonthSummary({ year, month, totals, instructorWages = 0 }: MonthSummaryProps) {
   const monthName = MONTH_NAMES[month - 1]
+  
+  // Calculate final profit including instructor wages
+  const totalCosts = totals.venueCosts + instructorWages
+  const finalNetProfit = totals.revenue - totalCosts
+  const finalMargin = totals.revenue > 0 ? (finalNetProfit / totals.revenue) * 100 : 0
   
   return (
     <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6">
@@ -26,7 +32,7 @@ export function MonthSummary({ year, month, totals }: MonthSummaryProps) {
           💰 {monthName.toUpperCase()} {year} TOTALS
         </h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600">
               {totals.revenue.toLocaleString()} ISK
@@ -40,21 +46,28 @@ export function MonthSummary({ year, month, totals }: MonthSummaryProps) {
             </div>
             <div className="text-sm text-gray-600">Venue Costs</div>
           </div>
-          
+
           <div className="text-center">
-            <div className={`text-2xl font-bold ${
-              totals.netProfit > 0 ? 'text-green-600' : 'text-red-600'
-            }`}>
-              {totals.netProfit.toLocaleString()} ISK
+            <div className="text-2xl font-bold text-purple-600">
+              {instructorWages.toLocaleString()} ISK
             </div>
-            <div className="text-sm text-gray-600">Net Profit</div>
+            <div className="text-sm text-gray-600">Instructor Wages</div>
           </div>
           
           <div className="text-center">
             <div className={`text-2xl font-bold ${
-              totals.margin > 0 ? 'text-green-600' : 'text-red-600'
+              finalNetProfit > 0 ? 'text-green-600' : 'text-red-600'
             }`}>
-              {totals.margin.toFixed(1)}%
+              {finalNetProfit.toLocaleString()} ISK
+            </div>
+            <div className="text-sm text-gray-600">Final Profit</div>
+          </div>
+          
+          <div className="text-center">
+            <div className={`text-2xl font-bold ${
+              finalMargin > 0 ? 'text-green-600' : 'text-red-600'
+            }`}>
+              {finalMargin.toFixed(1)}%
             </div>
             <div className="text-sm text-gray-600">Profit Margin</div>
           </div>

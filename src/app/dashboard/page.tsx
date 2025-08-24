@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { MonthNavigator } from '@/components/MonthNavigator'
 import { ProgramCard } from '@/components/ProgramCard'
 import { MonthSummary } from '@/components/MonthSummary'
+import { calculateInstructorWagesForDashboard } from '@/lib/instructor-calculations'
 
 interface PageProps {
   searchParams?: Promise<{ year?: string; month?: string }>
@@ -34,6 +35,11 @@ export default async function DashboardPage({ searchParams }: PageProps) {
                   pricingOption: true
                 }
               }
+            }
+          },
+          instructors: {
+            include: {
+              instructor: true
             }
           }
         }
@@ -73,8 +79,9 @@ export default async function DashboardPage({ searchParams }: PageProps) {
   const seasonalPrograms = year.programs.filter(p => !p.isMonthly)
   const monthlyPrograms = year.programs.filter(p => p.isMonthly)
 
-  // Calculate month totals
+  // Calculate month totals including instructor wages
   const monthTotals = calculateMonthTotals(year.programs, currentMonth, currentSeason)
+  const instructorWages = calculateInstructorWagesForDashboard(year.programs, currentMonth, currentYear, currentSeason)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -174,6 +181,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
           year={currentYear}
           month={currentMonth}
           totals={monthTotals}
+          instructorWages={instructorWages}
         />
       </div>
     </div>
